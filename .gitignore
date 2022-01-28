@@ -1,13 +1,4 @@
-# Ignore all
-tests/t_*
-benchmarks/*
-
-# Unignore all with extensions
-!tests/t_*.*
-!benchmarks/*.*
-
-*.js
-
+NecsusDemo
 .DS_Store
 callgrind.out.*
 profile_results.txt
