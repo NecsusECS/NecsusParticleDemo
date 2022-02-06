@@ -8,7 +8,7 @@ proc renderer*(
     renderer.get().clear()
     renderer.get().setDrawBlendMode(BlendMode_Blend)
 
-    for (eid, comp) in particles:
+    for comp in particles:
         renderer.get().setDrawColor(comp.particle.r, comp.particle.g, comp.particle.b, comp.particle.a)
         var r = rect(comp.position.x.cint, comp.position.y.cint, 15, 15)
         renderer.get().fillRect(r)

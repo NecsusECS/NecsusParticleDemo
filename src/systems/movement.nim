@@ -12,7 +12,7 @@ proc move*(
     particles: Query[tuple[position: ptr Position, velocity: Velocity]],
     screenSize: Shared[ScreenSize]
 ) =
-    for (eid, comp) in particles:
+    for comp in particles:
 
         comp.position.x = comp.position.x + (comp.velocity.x * dt)
         comp.position.y = comp.position.y + (comp.velocity.y * dt)
