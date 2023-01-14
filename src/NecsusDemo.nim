@@ -4,7 +4,7 @@ proc demoApp(screenSize: ScreenSize, renderer: RendererPtr) {.necsus(
     [],
     [~createParticles, ~exitGame, ~move, ~renderer],
     [],
-    newNecsusConf()
+    newNecsusConf(entitySize = 10_000, componentSize = 10_000)
 ).}
 
 let screenSize = (width: 640, height: 480)

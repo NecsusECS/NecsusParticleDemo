@@ -13,11 +13,11 @@ proc createParticles*(
 ) =
     ## Creates an initial set of zooming particles
     if total.get(0) < 5_000:
-        for i in 1..10:
+        for i in 1..100:
             total.set(total.get(0) + 1)
             let nonRed = rand(0..255).uint8
-            discard spawn((
+            discard spawn.with(
                 Particle(r: rand(200..255).uint8, g: nonRed, b: nonRed, a: rand(100..255).uint8),
                 Position(x: rand(-5..screenSize.get().width).float, y: rand(-5..screenSize.get().height).float),
                 Velocity(x: rand(-velocity_minmax..velocity_minmax), y: rand(-velocity_minmax..velocity_minmax))
-            ))
+            )
