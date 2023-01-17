@@ -1,4 +1,4 @@
-import sdl2
+import sdl2, necsus
 
 type
     SDLException = object of Defect
@@ -38,3 +38,16 @@ template initialize*(screenSize: ScreenSize, window, renderer, code: untyped) =
     except:
         echo getCurrentExceptionMsg()
         raise
+
+proc exitGame*(exit: var Shared[NecsusRun]) =
+    ## A necsus system that uses SDL2 events to detect when to exit
+    var event = defaultEvent
+    while pollEvent(event):
+        case event.kind
+        of QuitEvent:
+            exit.set(ExitLoop)
+        of KeyUp:
+            if event.key.keysym.scancode == SDL_SCANCODE_ESCAPE:
+                exit.set(ExitLoop)
+        else:
+            discard
