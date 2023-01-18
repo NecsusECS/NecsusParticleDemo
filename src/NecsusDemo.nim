@@ -110,7 +110,7 @@ proc renderer*(renderer: Shared[RendererPtr], bodies: Query[(Position, Visuals)]
 
 proc demoApp(screenSize: ScreenSize, renderer: RendererPtr) {.necsus(
     [~createCentralMass ],
-    [~exitGame, ~createBodies, ~simulate, ~move, ~cleanup, ~visuals, ~renderer],
+    [~exitGame, ~createBodies, ~simulate, ~move, ~cleanup, ~visuals, ~renderer, ~enforceFrameRate],
     [],
     newNecsusConf(entitySize = 10_000, componentSize = 10_000)
 ).}
