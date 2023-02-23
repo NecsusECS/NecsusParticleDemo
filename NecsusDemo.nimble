@@ -10,4 +10,4 @@ bin           = @["NecsusDemo"]
 
 # Dependencies
 
-requires "nim >= 1.6.2", "necsus >= 0.2.2", "sdl2", "vmath"
+requires "nim >= 1.6.2", "necsus#head", "sdl2", "vmath"

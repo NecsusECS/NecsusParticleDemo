@@ -51,7 +51,6 @@ proc createBodies*(
         )
 
 proc simulate(
-    dt: TimeElapsed,
     movingBodies: Query[(ptr Position, ptr Velocity, ptr Mass)],
     allBodies: Query[(ptr Position, ptr Mass)]
 ) =
@@ -71,12 +70,11 @@ proc simulate(
                 accum += diff * (force / distanceSqrt)
 
         vel.velocity += accum / mass.mass
-            
 
-proc move(dt: TimeElapsed, bodies: Query[(ptr Position, ptr Velocity)]) =
+proc move(dt: TimeDelta, bodies: Query[(ptr Position, ptr Velocity)]) =
     ## Moves all the bodies based on their velocity
     for eid, (pos, vel) in bodies:
-        pos.position += vel.velocity * dt
+        pos.position += vel.velocity * dt * 100
 
 proc cleanup(bodies: Query[(ptr Position, )], screenSize: Shared[ScreenSize], delete: Delete) =
     ## Destroys any bodies that get too far off screen
