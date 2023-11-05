@@ -21,7 +21,7 @@ const maxMass = 2.0'f32
 const maxSpeed = 10
 
 proc middle(screen: Shared[ScreenSize]): auto =
-     vec2(screen.get().width / 2, screen.get().height / 2)
+     vec2(screen.getOrRaise.width / 2, screen.getOrRaise.height / 2)
 
 proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Position, Mass)]) =
     ## Create a central body right in the middle of the screen
@@ -37,7 +37,7 @@ proc createBodies*(
     for i in count.len..100:
         let mass = rand(0.5'f32..maxMass)
 
-        let pos = vec2(rand(0..screenSize.get().width).float, rand(0..screenSize.get().height).float)
+        let pos = vec2(rand(0..screenSize.getOrRaise.width).float, rand(0..screenSize.getOrRaise.height).float)
 
         # Create a velocity that points at the central mass, then randomly rotate it
         let baseVelocity = (centralPos - pos).normalize * rand(0.1..maxInitialVel)
@@ -94,17 +94,17 @@ proc visuals*(bodies: Query[(ptr Velocity, ptr Position, ptr Visuals)], screenSi
         visuals.g = 0
 
 proc renderer*(renderer: Shared[RendererPtr], bodies: Query[(Position, Visuals)]) =
-    renderer.get().setDrawColor(0, 0, 0, 255)
-    renderer.get().clear()
-    renderer.get().setDrawBlendMode(BlendMode_Blend)
+    renderer.getOrRaise.setDrawColor(0, 0, 0, 255)
+    renderer.getOrRaise.clear()
+    renderer.getOrRaise.setDrawBlendMode(BlendMode_Blend)
 
     for (pos, visuals) in bodies:
-        renderer.get().filledCircleRGBA(
+        renderer.getOrRaise.filledCircleRGBA(
             pos.position.x.int16, pos.position.y.int16, visuals.radius,
             visuals.r, visuals.g, visuals.b, 255
         )
 
-    renderer.get().present()
+    renderer.getOrRaise.present()
 
 proc demoApp(screenSize: ScreenSize, renderer: RendererPtr) {.necsus(
     [~createCentralMass ],
