@@ -23,13 +23,13 @@ const maxSpeed = 10
 proc middle(screen: Shared[ScreenSize]): auto =
      vec2(screen.getOrRaise.width / 2, screen.getOrRaise.height / 2)
 
-proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Position, Mass)]) =
+proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Mass, Position)]) =
     ## Create a central body right in the middle of the screen
-    discard spawn.with(Position(position: screenSize.middle), Mass(mass: centralMass))
+    discard spawn.with(Mass(mass: centralMass), Position(position: screenSize.middle))
 
 proc createBodies*(
     screenSize: Shared[ScreenSize],
-    spawn: Spawn[(Position, Velocity, Mass, Visuals)],
+    spawn: Spawn[(Mass, Position, Velocity, Visuals)],
     count: Query[(Velocity, )]
 ) =
     ## Creates an initial set of zooming particles
@@ -44,9 +44,9 @@ proc createBodies*(
         let velocity = rotate(rand(-maxInitialRotation..maxInitialRotation)) * baseVelocity
 
         discard spawn.with(
+            Mass(mass: mass),
             Position(position: pos),
             Velocity(velocity: velocity),
-            Mass(mass: mass),
             Visuals(radius: int16(10 * (mass / maxMass)) + 1)
         )
 
