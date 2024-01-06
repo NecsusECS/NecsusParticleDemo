@@ -25,7 +25,7 @@ proc middle(screen: Shared[ScreenSize]): auto =
 
 proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Mass, Position)]) =
     ## Create a central body right in the middle of the screen
-    discard spawn.with(Mass(mass: centralMass), Position(position: screenSize.middle))
+    spawn.with(Mass(mass: centralMass), Position(position: screenSize.middle))
 
 proc createBodies*(
     screenSize: Shared[ScreenSize],
@@ -43,7 +43,7 @@ proc createBodies*(
         let baseVelocity = (centralPos - pos).normalize * rand(0.1..maxInitialVel)
         let velocity = rotate(rand(-maxInitialRotation..maxInitialRotation)) * baseVelocity
 
-        discard spawn.with(
+        spawn.with(
             Mass(mass: mass),
             Position(position: pos),
             Velocity(velocity: velocity),
@@ -51,8 +51,8 @@ proc createBodies*(
         )
 
 proc simulate(
-    movingBodies: Query[(ptr Position, ptr Velocity, ptr Mass)],
-    allBodies: Query[(ptr Position, ptr Mass)]
+    movingBodies: FullQuery[(ptr Position, ptr Velocity, ptr Mass)],
+    allBodies: FullQuery[(ptr Position, ptr Mass)]
 ) =
     ## Adjusts the velocity for every body
     for eid, (pos, vel, mass) in movingBodies:
@@ -71,19 +71,19 @@ proc simulate(
 
         vel.velocity += accum / mass.mass
 
-proc move(dt: TimeDelta, bodies: Query[(ptr Position, ptr Velocity)]) =
+proc move(dt: TimeDelta, bodies: FullQuery[(ptr Position, ptr Velocity)]) =
     ## Moves all the bodies based on their velocity
     for eid, (pos, vel) in bodies:
         pos.position += vel.velocity * dt * 100
 
-proc cleanup(bodies: Query[(ptr Position, )], screenSize: Shared[ScreenSize], delete: Delete) =
+proc cleanup(bodies: FullQuery[(ptr Position, )], screenSize: Shared[ScreenSize], delete: Delete) =
     ## Destroys any bodies that get too far off screen
     let middle = screenSize.middle
     for eid, (pos, ) in bodies:
         if (pos.position - middle).lengthSq > 1_000_000:
             delete(eid)
 
-proc visuals*(bodies: Query[(ptr Velocity, ptr Position, ptr Visuals)], screenSize: Shared[ScreenSize]) =
+proc visuals*(bodies: FullQuery[(ptr Velocity, ptr Position, ptr Visuals)], screenSize: Shared[ScreenSize]) =
     ## Adjust the color of each body based on its velocity
     let center = screenSize.middle
     let boundary = center.lengthSq
