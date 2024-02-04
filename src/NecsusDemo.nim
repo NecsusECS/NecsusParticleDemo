@@ -23,7 +23,7 @@ const maxSpeed = 10
 proc middle(screen: Shared[ScreenSize]): auto =
      vec2(screen.getOrRaise.width / 2, screen.getOrRaise.height / 2)
 
-proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Mass, Position)]) =
+proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Mass, Position)]) {.startupSys.} =
     ## Create a central body right in the middle of the screen
     spawn.with(Mass(mass: centralMass), Position(position: screenSize.middle))
 
@@ -107,9 +107,7 @@ proc renderer*(renderer: Shared[RendererPtr], bodies: Query[(Position, Visuals)]
     renderer.getOrRaise.present()
 
 proc demoApp(screenSize: ScreenSize, renderer: RendererPtr) {.necsus(
-    [~createCentralMass ],
-    [~exitGame, ~createBodies, ~simulate, ~move, ~cleanup, ~visuals, ~renderer, ~enforceFrameRate],
-    [],
+    [ ~createCentralMass, ~exitGame, ~createBodies, ~simulate, ~move, ~cleanup, ~visuals, ~renderer, ~enforceFrameRate ],
     newNecsusConf(entitySize = 10_000, componentSize = 10_000)
 ).}
 
