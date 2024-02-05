@@ -40,7 +40,7 @@ template initialize*(screenSize: ScreenSize, window, renderer, code: untyped) =
         raise
 
 proc enforceFrameRate*(delta: TimeDelta) =
-    delay max(0, ((1 / 30) - delta) * 1000).uint32
+    delay max(0, ((1 / 30) - delta()) * 1000).uint32
 
 proc exitGame*(exit: Shared[NecsusRun]) =
     ## A necsus system that uses SDL2 events to detect when to exit

@@ -74,7 +74,7 @@ proc simulate(
 proc move(dt: TimeDelta, bodies: FullQuery[(ptr Position, ptr Velocity)]) =
     ## Moves all the bodies based on their velocity
     for eid, (pos, vel) in bodies:
-        pos.position += vel.velocity * dt * 100
+        pos.position += vel.velocity * dt() * 100
 
 proc cleanup(bodies: FullQuery[(ptr Position, )], screenSize: Shared[ScreenSize], delete: Delete) =
     ## Destroys any bodies that get too far off screen
