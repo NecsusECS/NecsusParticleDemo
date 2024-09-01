@@ -1,16 +1,15 @@
 import necsus, sdl2util, sdl2, random, math, sdl2/gfx, vmath
 
 type
-    Position* = object
+    Position* {.byref.} = object
         position: Vec2
 
-    Velocity* = object
+    Velocity* {.byref.} = object
         velocity: Vec2
 
-    Mass* = object
-        mass: float32
+    Mass* = float32
 
-    Visuals* = object
+    Visuals* {.byref.} = object
         r*, g*, b*: uint8
         radius*: int16
 
@@ -18,14 +17,13 @@ const maxInitialVel = 3.0
 const maxInitialRotation = 50.0'f32
 const centralMass = 1200.0'f32
 const maxMass = 2.0'f32
-const maxSpeed = 10
 
 proc middle(screen: Shared[ScreenSize]): auto =
      vec2(screen.getOrRaise.width / 2, screen.getOrRaise.height / 2)
 
 proc createCentralMass(screenSize: Shared[ScreenSize], spawn: Spawn[(Mass, Position)]) {.startupSys.} =
     ## Create a central body right in the middle of the screen
-    spawn.with(Mass(mass: centralMass), Position(position: screenSize.middle))
+    spawn.with(centralMass, Position(position: screenSize.middle))
 
 proc createBodies*(
     screenSize: Shared[ScreenSize],
@@ -44,15 +42,15 @@ proc createBodies*(
         let velocity = rotate(rand(-maxInitialRotation..maxInitialRotation)) * baseVelocity
 
         spawn.with(
-            Mass(mass: mass),
+            mass,
             Position(position: pos),
             Velocity(velocity: velocity),
             Visuals(radius: int16(10 * (mass / maxMass)) + 1)
         )
 
 proc simulate(
-    movingBodies: FullQuery[(ptr Position, ptr Velocity, ptr Mass)],
-    allBodies: FullQuery[(ptr Position, ptr Mass)]
+    movingBodies: FullQuery[(ptr Position, ptr Velocity, Mass)],
+    allBodies: FullQuery[(Position, Mass)]
 ) =
     ## Adjusts the velocity for every body
     for eid, (pos, vel, mass) in movingBodies:
@@ -65,15 +63,15 @@ proc simulate(
                 let distance = max(dot(diff, diff), 10_000'f32)
 
                 let distanceSqrt = distance.sqrt
-                let force = otherMass.mass / distance
+                let force = otherMass / distance
 
                 accum += diff * (force / distanceSqrt)
 
-        vel.velocity += accum / mass.mass
+        vel.velocity += accum / mass
 
-proc move(dt: TimeDelta, bodies: FullQuery[(ptr Position, ptr Velocity)]) =
+proc move(dt: TimeDelta, bodies: Query[(ptr Position, Velocity)]) =
     ## Moves all the bodies based on their velocity
-    for eid, (pos, vel) in bodies:
+    for (pos, vel) in bodies:
         pos.position += vel.velocity * dt() * 100
 
 proc cleanup(bodies: FullQuery[(ptr Position, )], screenSize: Shared[ScreenSize], delete: Delete) =
@@ -83,12 +81,12 @@ proc cleanup(bodies: FullQuery[(ptr Position, )], screenSize: Shared[ScreenSize]
         if (pos.position - middle).lengthSq > 1_000_000:
             delete(eid)
 
-proc visuals*(bodies: FullQuery[(ptr Velocity, ptr Position, ptr Visuals)], screenSize: Shared[ScreenSize]) =
+proc visuals*(bodies: Query[(Velocity, Position, ptr Visuals)], screenSize: Shared[ScreenSize]) =
     ## Adjust the color of each body based on its velocity
     let center = screenSize.middle
     let boundary = center.lengthSq
 
-    for eid, (vel, pos, visuals) in bodies:
+    for (vel, pos, visuals) in bodies:
         visuals.r = max(180 - vel.velocity.lengthSq / 3 * 255, 100).uint8
         visuals.b = max(255 - (center - pos.position).lengthSq / boundary * 400, 0).uint8
         visuals.g = 0
